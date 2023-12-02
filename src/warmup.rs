@@ -4,11 +4,12 @@ use std::path::Path;
 
 use crate::helpers::read_input;
 
-#[derive(Debug, Clone)]  // Add Clone trait to State
+#[allow(dead_code)]
 struct State {
     current_total: i64,
     calories_per_elf: Vec<i64>
 }
+#[allow(dead_code)]
 pub fn calculate_most_calories_2022_1() {
     let calories = read_input(Path::new("src/resources/warmup_input.txt"))
         .expect("coudn't read input");
