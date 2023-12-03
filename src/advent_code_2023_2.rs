@@ -1,4 +1,3 @@
-use std::env::current_exe;
 use std::path::Path;
 
 use crate::helpers::read_input;
@@ -13,12 +12,6 @@ enum Color {
 struct Game {
     id :i64,
     extractions: Vec<Extraction>
-}
-#[derive(Debug)]
-struct MinSubset {
-    red: i64,
-    green: i64,
-    blue: i64,
 }
 
 #[derive(Debug)]
@@ -50,7 +43,7 @@ pub fn possible_games_sum() {
         total
     });
 
-    print!("Part 2 solution: {:?}", count);
+    print!("Part 2 solution: {:?} \n", count);
 
     // for every input line i just care about the extractions
 
@@ -63,7 +56,7 @@ pub fn possible_games_sum() {
     });
     //
 
-    print!("Part 2.2 solution: {:?}", sum_power_set);
+    print!("Part 2.2 solution: {:?} \n", sum_power_set);
 }
 
 fn power_set(game: &Game) -> Extraction {
@@ -153,36 +146,6 @@ fn to_extraction(s: &str) -> Extraction {
     })
 }
 
-fn create_subset(extraction: &str) -> MinSubset {
-    // good case of folding over state, can split by "," and then accumulate and
-    // count all colors
-
-    let state = MinSubset {
-        red: 0,
-        green: 0,
-        blue: 0,
-    };
-    extraction.split(",").fold(state, |mut state, entry| -> MinSubset {
-        // an entry is: 15 green
-        // print!("Entry: {} \n", entry);
-        let amount_and_color: Vec<String> = entry
-            .split(" ")
-            .filter(|s| !s.is_empty())
-            .map(|s| s.to_string())
-            .collect();
-        let amount: i64 = amount_and_color.get(0).unwrap().parse().unwrap();
-        let color: Color = string_to_color(amount_and_color.last().unwrap());
-
-        match color {
-            Color::Red => if amount > state.red { state.red = amount},
-            Color::Green => if amount > state.green { state.green = amount},
-            Color::Blue => if amount > state.green { state.green = amount},
-        }
-        state
-    })
-}
-
-
 fn string_to_color(s: &str) -> Color {
     match s.to_lowercase().as_str() {
         "red" => Color::Red,
@@ -200,6 +163,6 @@ mod tests {
     #[test]
     fn test_possible_game_sum() {
         // Arrange
-        let result = possible_games_sum();
+        possible_games_sum();
     }
 }
