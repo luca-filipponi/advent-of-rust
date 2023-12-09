@@ -1,5 +1,7 @@
+#![allow(dead_code)]
+#![warn(unused_variables)]
 
-#[allow(dead_code)]
+
 fn ownership_playground() {
 
 
@@ -80,10 +82,22 @@ fn ownership_playground() {
 
     // println!("{}", slen); // this don't compile
 
-    let slen3 = calculate_length_with_borrowing(&slen2); //this compile but a bit annoying
+    let _slen3 = calculate_length_with_borrowing(&slen2); //this compile but a bit annoying
 
     println!("{}", slen2); // this works
 
+
+}
+
+async fn test() {
+    let mut data = 42;
+
+    {
+        let reference = &mut data; // Mutable borrow starts
+        async_function(reference).await;
+    } // Mutable borrow ends
+
+    println!("Updated value: {}", data);
 }
 
 // what if i need to calculate the size of a string
@@ -103,8 +117,17 @@ fn calculate_length_with_borrowing(s: &String) -> usize {
 } // Here, s goes out of scope. But because it does not have ownership of what
 // it refers to, it is not dropped.
 
+fn push_something(s: &mut String){
+    s.push('m');
+}
+
 fn using_string_literal(s: &str) -> &str {
     s
+}
+
+async fn async_function(x: &mut i32) {
+    *x += 1;
+    // ... async operations ...
 }
 
 // when you have functions that gets something and returns something is "easier"
@@ -123,3 +146,17 @@ fn takes_ownership(some_string: String) { // some_string comes into scope
 fn makes_copy(some_integer: i32) { // some_integer comes into scope
     println!("{}", some_integer);
 } // Here, some_integer goes out of scope. Nothing special happens.
+
+
+#[cfg(test)]
+mod tests {
+    // Import necessary items from the code being tested
+    use super::*;
+
+    // Test function with the #[test] attribute
+    #[test]
+    fn test_ownership_playground() {
+        // Arrange
+        ownership_playground();
+    }
+}
