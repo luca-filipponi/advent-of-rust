@@ -1,11 +1,13 @@
 #![allow(dead_code)]
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 use std::path::Path;
+use std::time::Instant;
 
 use crate::helpers::read_input;
 
 #[derive(Debug)]
 struct ScratchCard {
+    card_id: i64,
     winning_num: HashSet<i64>,
     actual_num: HashSet<i64>,
 
@@ -22,6 +24,11 @@ pub fn scratch_cards() {
 
         // Card 1: 41 48 83 86 17
         let winning_split: Vec<&str> = winners_and_extractions[0].split(":").collect();
+
+        let card_and_id: Vec<&str> = winning_split[0].split(" ").filter(|s| !s.is_empty()).collect();
+
+        let card_id = card_and_id[1];
+
         // 41 48 83 86 17
         let winning_num: Vec<&str> = winning_split[1].split(" ").collect();
 
@@ -38,10 +45,12 @@ pub fn scratch_cards() {
             .collect();
 
         ScratchCard {
+            card_id: card_id.parse::<i64>().unwrap(),
             winning_num: parsed_winner,
-            actual_num: actual_num,
+            actual_num,
         }
     }).collect();
+
 
     let total_point = scratch_cards.iter().fold(0, |total, card| -> i64 {
         let actual_winners_count = card.winning_num.intersection(&card.actual_num).count();
@@ -54,6 +63,42 @@ pub fn scratch_cards() {
 
     println!("{:?}", scratch_cards);
     println!("{:?}", total_point);
+
+
+    println!("Part 2 ---- {:?}", total_point);
+    let start = Instant::now();
+
+
+    let map: HashMap<_, _> = scratch_cards.into_iter().fold(HashMap::new(), |mut acc, scratch_card| {
+
+        // now i now that i am on card X and have Y winners. This card itself could have
+        // more than one occurrence.
+        let winner_count = scratch_card.winning_num.intersection(&scratch_card.actual_num).count();
+        let card_id = scratch_card.card_id;
+
+        // the multiplier represent how many repeated card i already have of this one
+        let multiplier: i64 = match acc.get(&card_id) {
+            None => 1,
+            Some(y) => *y +1
+        };
+        // println!("Multiplier {} for {}: {:?}", multiplier, card_id, acc);
+
+        // add the winner for current id
+        * acc.entry(card_id).or_insert(0) += 1;
+
+        for _ in 0..multiplier {
+            for i in 1..=winner_count {
+                let next_card_id = card_id + i as i64;
+                * acc.entry(next_card_id).or_insert(0) += 1;
+            }
+        }
+        acc
+    });
+
+    let total: i64 = map.values().sum();
+    println!("Part 4.1: {:?}, took {:?}", total, start.elapsed());
+
+
 }
 
 fn within_bound(i: i64, j: i64, end: usize) -> bool{

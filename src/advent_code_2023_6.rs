@@ -1,10 +1,6 @@
 #![allow(dead_code)]
 
-use std::arch::is_aarch64_feature_detected;
-use std::collections::HashSet;
-use std::net::Ipv6Addr;
 use std::path::Path;
-use std::ptr::drop_in_place;
 use std::time::Instant;
 
 use crate::helpers::read_input;
@@ -48,7 +44,7 @@ pub fn races() {
 
     let total = races.iter().fold(1, |total, game| -> i64 {
         let mut ways_to_win = 0;
-        for i in (0..=game.time) {
+        for i in 0..=game.time {
             let speed = i;
             let time = game.time-i;
             let distance = speed * time;
