@@ -76,7 +76,7 @@ pub fn scratch_cards() {
         let winner_count = scratch_card.winning_num.intersection(&scratch_card.actual_num).count();
         let card_id = scratch_card.card_id;
 
-        // the multiplier represent how many repeated card i already have of this one
+        // the multiplier represent how many copy of this card already have
         let multiplier: i64 = match acc.get(&card_id) {
             None => 1,
             Some(y) => *y +1
@@ -84,13 +84,11 @@ pub fn scratch_cards() {
         // println!("Multiplier {} for {}: {:?}", multiplier, card_id, acc);
 
         // add the winner for current id
-        * acc.entry(card_id).or_insert(0) += 1;
+        *acc.entry(card_id).or_insert(0) += 1;
 
-        for _ in 0..multiplier {
-            for i in 1..=winner_count {
-                let next_card_id = card_id + i as i64;
-                * acc.entry(next_card_id).or_insert(0) += 1;
-            }
+        for i in 1..=winner_count {
+            let next_card_id = card_id + i as i64;
+            *acc.entry(next_card_id).or_insert(0) += 1 * multiplier;
         }
         acc
     });
